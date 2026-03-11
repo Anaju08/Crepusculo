@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crepúsculo — Quiz da Saga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --forest:   #0d1a10;
+      --deep:     #070e09;
+      --mist:     #c8d8c0;
+      --ivory:    #f0ebe0;
+      --gold:     #c9a84c;
+      --amber:    #d4882a;
+      --bloom:    #8b1a2a;
+      --petal:    #c0394a;
+      --edward:   #4a6fa5;
+      --jacob:    #c47a3a;
+      --sage:     #6b8f71;
+      --smoke:    rgba(200,216,192,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep);
+      color: var(--ivory);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Noise */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* ====== HERO ====== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 60px 40px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(13,26,16,0.0) 0%, var(--deep) 75%),
+        linear-gradient(180deg, rgba(7,14,9,0.5) 0%, rgba(7,14,9,0.95) 100%);
+      z-index: 1;
+    }
+
+    /* Forest silhouette */
+    .forest-silhouette {
+      position: absolute; bottom: 0; left: 0; width: 100%;
+      height: 45%;
+      z-index: 2;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 300'%3E%3Cpath d='M0,300 L0,180 L30,140 L60,180 L80,100 L110,150 L130,80 L155,140 L175,60 L200,130 L220,90 L250,150 L270,110 L300,160 L320,70 L345,130 L370,50 L400,120 L425,85 L450,140 L475,60 L500,130 L525,95 L550,155 L575,65 L600,125 L625,88 L650,145 L675,55 L700,120 L725,82 L750,150 L775,70 L800,130 L825,92 L850,155 L875,65 L900,130 L925,88 L950,145 L975,60 L1000,125 L1025,85 L1050,150 L1075,70 L1100,135 L1125,95 L1150,155 L1175,65 L1200,130 L1225,90 L1250,150 L1275,70 L1300,130 L1320,100 L1350,155 L1380,120 L1410,160 L1440,140 L1440,300 Z' fill='%230d1a10'/%3E%3C/svg%3E") bottom/cover no-repeat;
+    }
+    .forest-silhouette2 {
+      position: absolute; bottom: 0; left: 0; width: 100%;
+      height: 30%;
+      z-index: 3;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath d='M0,200 L0,130 L40,90 L70,130 L100,70 L130,110 L160,55 L185,105 L210,75 L240,120 L265,80 L290,125 L315,60 L345,110 L375,45 L405,100 L430,72 L460,118 L490,55 L520,108 L550,70 L580,125 L610,58 L640,112 L670,75 L700,120 L730,58 L760,115 L790,72 L820,120 L850,55 L880,110 L910,75 L940,122 L970,60 L1000,115 L1030,72 L1060,118 L1090,55 L1120,112 L1150,78 L1180,125 L1210,65 L1240,118 L1270,80 L1300,125 L1330,85 L1360,130 L1400,100 L1440,130 L1440,200 Z' fill='%23070e09'/%3E%3C/svg%3E") bottom/cover no-repeat;
+    }
+
+    /* Moon */
+    .moon {
+      position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, #f5f0e8, #d8cdb8 40%, #a89878 80%);
+      box-shadow: 0 0 60px 20px rgba(220,200,160,0.12), 0 0 140px 60px rgba(220,200,160,0.05);
+      animation: moonGlow 7s ease-in-out infinite;
+      z-index: 2;
+    }
+    @keyframes moonGlow {
+      0%,100% { box-shadow: 0 0 60px 20px rgba(220,200,160,0.12), 0 0 140px 60px rgba(220,200,160,0.05); }
+      50%      { box-shadow: 0 0 80px 30px rgba(220,200,160,0.18), 0 0 180px 80px rgba(220,200,160,0.08); }
+    }
+
+    /* Fireflies */
+    .fireflies { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .ff {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: #d4e8b0; animation: ffFloat linear infinite;
+      box-shadow: 0 0 6px 2px rgba(212,232,176,0.6);
+    }
+    @keyframes ffFloat {
+      0%   { transform: translate(0,0) scale(0); opacity: 0; }
+      20%  { opacity: 1; transform: translate(10px,-20px) scale(1); }
+      80%  { opacity: 0.8; }
+      100% { transform: translate(-15px,-80px) scale(0.3); opacity: 0; }
+    }
+
+    /* Hero content */
+    .hero-content { position: relative; z-index: 10; }
+
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.6em;
+      color: var(--sage);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeUp 1.2s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.9;
+      background: linear-gradient(160deg, #f0ebe0 0%, #c9a84c 45%, #8b1a2a 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp 1.3s ease both; animation-delay: 0.15s;
+      margin-bottom: 10px;
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-style: italic;
+      color: var(--mist);
+      letter-spacing: 0.15em;
+      animation: fadeUp 1.3s ease both; animation-delay: 0.3s;
+      margin-bottom: 40px;
+    }
+
+    /* Characters strip */
+    .characters {
+      display: flex; gap: 50px; justify-content: center; align-items: flex-end;
+      margin: 30px 0 50px;
+      animation: fadeUp 1.4s ease both; animation-delay: 0.45s;
+    }
+    .char {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      cursor: default;
+    }
+    .char-avatar {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 2px solid;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .char:hover .char-avatar { transform: scale(1.1); }
+    .char-bella .char-avatar  { border-color: var(--gold); box-shadow: 0 0 25px rgba(201,168,76,0.3); background: rgba(201,168,76,0.08); }
+    .char-edward .char-avatar { border-color: var(--edward); box-shadow: 0 0 25px rgba(74,111,165,0.3); background: rgba(74,111,165,0.08); }
+    .char-jacob .char-avatar  { border-color: var(--jacob); box-shadow: 0 0 25px rgba(196,122,58,0.3); background: rgba(196,122,58,0.08); }
+    .char-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem; letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .char-bella  .char-name  { color: var(--gold); }
+    .char-edward .char-name  { color: var(--edward); }
+    .char-jacob  .char-name  { color: var(--jacob); }
+
+    /* Book covers row */
+    .books {
+      display: flex; gap: 12px; justify-content: center; align-items: flex-end;
+      margin-bottom: 50px;
+      animation: fadeUp 1.4s ease both; animation-delay: 0.55s;
+    }
+    .book {
+      width: 62px;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: -4px 6px 20px rgba(0,0,0,0.7);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+      position: relative;
+    }
+    .book:hover { transform: translateY(-8px) rotate(-2deg); box-shadow: -6px 14px 30px rgba(0,0,0,0.8); }
+    .book-cover {
+      height: 88px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding: 6px 4px;
+      position: relative;
+      font-family: 'Playfair Display', serif;
+    }
+    /* Book 1 - Twilight: black with hands & apple */
+    .b1 .book-cover { background: linear-gradient(160deg, #0a0a0a, #1a1a1a); }
+    .b1 .book-icon { font-size: 1.6rem; }
+    /* Book 2 - New Moon: orange/red */
+    .b2 .book-cover { background: linear-gradient(160deg, #1a0800, #3d1200); }
+    .b2 .book-icon { font-size: 1.6rem; }
+    /* Book 3 - Eclipse: blue/grey */
+    .b3 .book-cover { background: linear-gradient(160deg, #0a0f1a, #152030); }
+    .b3 .book-icon { font-size: 1.6rem; }
+    /* Book 4 - Breaking Dawn: white/feather */
+    .b4 .book-cover { background: linear-gradient(160deg, #f8f4ec, #e8ddc8); }
+    .b4 .book-icon { font-size: 1.6rem; filter: invert(0.05); }
+    /* Book 5 - Midnight Sun */
+    .b5 .book-cover { background: linear-gradient(160deg, #200508, #4a0810); }
+    .b5 .book-icon { font-size: 1.6rem; }
+
+    .book-title {
+      font-size: 0.38rem; letter-spacing: 0.05em;
+      text-transform: uppercase; text-align: center;
+      line-height: 1.2; margin-top: 4px;
+    }
+    .b4 .book-title { color: #222; }
+
+    .scroll-cta {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--sage);
+      animation: fadeUp 1.5s ease both; animation-delay: 0.7s;
+      cursor: pointer; background: none; border: none;
+      transition: color 0.3s;
+    }
+    .scroll-cta:hover { color: var(--gold); }
+    .scroll-arrow { animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====== QUIZ SECTION ====== */
+    .quiz-section {
+      padding: 80px 20px 120px;
+      max-width: 820px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .quiz-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-style: italic;
+      color: var(--ivory);
+      margin-bottom: 14px;
+    }
+    .quiz-header p {
+      color: var(--mist); font-style: italic;
+      font-size: 1.05rem; letter-spacing: 0.05em;
+    }
+
+    /* Score bar */
+    .score-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 30px;
+      border: 1px solid rgba(201,168,76,0.25);
+      background: rgba(13,26,16,0.6);
+      margin-bottom: 50px;
+      border-radius: 2px;
+    }
+    .score-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.8rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--sage);
+    }
+    .score-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--gold);
+    }
+    .progress-wrap {
+      flex: 1; margin: 0 30px; height: 3px;
+      background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sage), var(--gold));
+      border-radius: 2px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    /* Question card */
+    .q-card {
+      background: linear-gradient(135deg, rgba(13,26,16,0.7), rgba(7,14,9,0.9));
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 4px;
+      padding: 40px 45px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s;
+    }
+    .q-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: linear-gradient(to bottom, var(--gold), var(--sage));
+      opacity: 0.5;
+    }
+    .q-card.answered { border-color: rgba(201,168,76,0.3); }
+
+    .q-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.72rem; letter-spacing: 0.5em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .q-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-style: italic;
+      line-height: 1.6; color: var(--ivory);
+      margin-bottom: 28px;
+    }
+
+    /* Slider / toggle buttons */
+    .toggle-group {
+      display: flex;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      overflow: hidden;
+      width: fit-content;
+      background: rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .toggle-btn {
+      padding: 13px 42px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none; cursor: pointer;
+      background: transparent;
+      color: var(--mist);
+      transition: color 0.3s, background 0.35s;
+      position: relative; z-index: 1;
+      font-weight: 600;
+    }
+    .toggle-btn:disabled { cursor: default; }
+
+    /* Sliding indicator */
+    .slider-pill {
+      position: absolute;
+      top: 4px; bottom: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      border-radius: 50px;
+      background: rgba(255,255,255,0.07);
+      transition: left 0.35s cubic-bezier(0.4,0,0.2,1), background 0.35s;
+      pointer-events: none;
+    }
+
+    /* States after answer */
+    .toggle-btn.chosen-true  { color: #fff; }
+    .toggle-btn.chosen-false { color: #fff; }
+    .toggle-btn.correct-glow { background: rgba(34,160,60,0.85); }
+    .toggle-btn.wrong-glow   { background: rgba(180,30,40,0.85); }
+    .slider-pill.pill-true-active  { background: rgba(34,160,60,0.5); left: 4px; }
+    .slider-pill.pill-false-active { background: rgba(34,160,60,0.5); left: calc(50%); }
+    .slider-pill.pill-wrong-true   { background: rgba(180,30,40,0.5); left: 4px; }
+    .slider-pill.pill-wrong-false  { background: rgba(180,30,40,0.5); left: calc(50%); }
+
+    .q-feedback {
+      margin-top: 18px;
+      padding: 14px 20px;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      font-style: italic;
+      display: none;
+      line-height: 1.6;
+    }
+    .q-feedback.show { display: block; animation: feedIn 0.4s ease; }
+    @keyframes feedIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .q-feedback.correct { background: rgba(34,160,60,0.12); border-left: 3px solid #22a03c; color: #a8e8b8; }
+    .q-feedback.wrong   { background: rgba(180,30,40,0.12); border-left: 3px solid #b41e28; color: #f0a0a8; }
+
+    /* Result panel */
+    .result-panel {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+      background: linear-gradient(135deg, rgba(13,26,16,0.8), rgba(7,14,9,0.95));
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 4px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .result-panel.show { display: block; }
+    .result-icon { font-size: 4rem; margin-bottom: 20px; }
+    .result-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-style: italic;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .result-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem; color: var(--ivory);
+      margin-bottom: 10px;
+    }
+    .result-msg {
+      color: var(--mist); font-style: italic;
+      font-size: 1.1rem; line-height: 1.7;
+      margin-bottom: 36px;
+    }
+    .restart-btn {
+      padding: 15px 50px;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-style: italic;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: all 0.35s;
+    }
+    .restart-btn:hover { background: var(--gold); color: var(--deep); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid rgba(201,168,76,0.1);
+      color: rgba(200,216,192,0.3);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="moon"></div>
+  <div class="forest-silhouette"></div>
+  <div class="forest-silhouette2"></div>
+  <div class="fireflies" id="fireflies"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">A Saga Imortal</p>
+    <h1>Crepúsculo</h1>
+    <p class="hero-sub">Twilight Saga</p>
+
+    <!-- Characters -->
+    <div class="characters">
+      <div class="char char-bella">
+        <div class="char-avatar">👩</div>
+        <span class="char-name">Bella Swan</span>
+      </div>
+      <div class="char char-edward">
+        <div class="char-avatar">🧛</div>
+        <span class="char-name">Edward Cullen</span>
+      </div>
+      <div class="char char-jacob">
+        <div class="char-avatar">🐺</div>
+        <span class="char-name">Jacob Black</span>
+      </div>
+    </div>
+
+    <!-- Book covers (illustrated) -->
+    <div class="books">
+      <div class="book b1">
+        <div class="book-cover">
+          <span class="book-icon">🍎</span>
+          <div class="book-title" style="color:#ccc;">Crepúsculo</div>
+        </div>
+      </div>
+      <div class="book b2">
+        <div class="book-cover">
+          <span class="book-icon">🌸</span>
+          <div class="book-title" style="color:#e8a080;">Lua Nova</div>
+        </div>
+      </div>
+      <div class="book b3">
+        <div class="book-cover">
+          <span class="book-icon">✂️</span>
+          <div class="book-title" style="color:#9ab0d0;">Eclipse</div>
+        </div>
+      </div>
+      <div class="book b4">
+        <div class="book-cover">
+          <span class="book-icon">🪶</span>
+          <div class="book-title" style="color:#444;">Amanhecer</div>
+        </div>
+      </div>
+      <div class="book b5">
+        <div class="book-cover">
+          <span class="book-icon">🌅</span>
+          <div class="book-title" style="color:#f0b8a0;">Sol da Meia‑Noite</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="scroll-cta" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">
+      Começar o Quiz <span class="scroll-arrow">↓</span>
+    </button>
+  </div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section" id="quiz">
+  <div class="quiz-header reveal">
+    <h2>Quiz da Saga</h2>
+    <p>Quinze perguntas sobre os filmes de Crepúsculo. Verdadeiro ou Falso?</p>
+  </div>
+
+  <div class="score-bar reveal">
+    <span class="score-label">Progresso</span>
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="score-value" id="scoreDisplay">0 / 15</span>
+  </div>
+
+  <div id="quizContainer"></div>
+  <div class="result-panel" id="resultPanel">
+    <div class="result-icon" id="resultIcon"></div>
+    <h3 id="resultTitle"></h3>
+    <div class="result-score" id="resultScore"></div>
+    <p class="result-msg" id="resultMsg"></p>
+    <button class="restart-btn" onclick="restartQuiz()">✦ Tentar Novamente ✦</button>
+  </div>
+</section>
+
+<footer>
+  <p>— Twilight Saga Fan Quiz · Baseado nos filmes da saga —</p>
+</footer>
+
+<script>
+// Fireflies
+(function(){
+  const c = document.getElementById('fireflies');
+  for(let i=0;i<22;i++){
+    const f = document.createElement('div');
+    f.className='ff';
+    f.style.left = Math.random()*100+'%';
+    f.style.top  = (30+Math.random()*60)+'%';
+    f.style.animationDuration = (4+Math.random()*8)+'s';
+    f.style.animationDelay   = (Math.random()*6)+'s';
+    c.appendChild(f);
+  }
+})();
+
+// Quiz data
+const questions = [
+  {
+    text: "No primeiro filme, Bella Swan se muda para Forks para morar com seu pai, Charlie.",
+    answer: true,
+    feedback: "Verdade! Bella deixa Phoenix, Arizona, e vai morar com seu pai Charlie em Forks, Washington."
+  },
+  {
+    text: "Em 'Lua Nova', Edward deixa Bella depois que ela é ferida em sua festa de aniversário.",
+    answer: true,
+    feedback: "Verdade! Edward e sua família abandonam Forks após Jasper tentar atacar Bella na festa."
+  },
+  {
+    text: "Jacob Black se transforma em lobo pela primeira vez na frente de Bella no segundo filme.",
+    answer: false,
+    feedback: "Falso! Jacob se transforma longe de Bella. Ela descobre que ele é um lobisomem de outra forma."
+  },
+  {
+    text: "Em 'Eclipse', os Cullens e os lobos se unem para lutar contra o exército de recém-nascidos de Victoria.",
+    answer: true,
+    feedback: "Verdade! A aliança entre vampiros e lobisomens é um momento histórico na saga."
+  },
+  {
+    text: "A atriz que interpreta Bella Swan nos filmes é Jennifer Lawrence.",
+    answer: false,
+    feedback: "Falso! Bella Swan é interpretada por Kristen Stewart. Jennifer Lawrence não faz parte do elenco."
+  },
+  {
+    text: "Em 'Amanhecer — Parte 1', Bella e Edward se casam em uma cerimônia ao ar livre.",
+    answer: true,
+    feedback: "Verdade! O casamento acontece no jardim da casa dos Cullen, com Alice como organizadora."
+  },
+  {
+    text: "No filme 'Crepúsculo', Edward salva Bella de ser atropelada por uma van no estacionamento da escola.",
+    answer: true,
+    feedback: "Verdade! Edward usa sua velocidade e força sobrehumanas para parar a van com as próprias mãos."
+  },
+  {
+    text: "Em 'Amanhecer — Parte 2', a batalha final entre os Cullen e os Volturi é um sonho de Alice.",
+    answer: true,
+    feedback: "Verdade! Alice mostra ao Aro uma visão do futuro para intimidá-lo, e a batalha 'acontece' nessa visão."
+  },
+  {
+    text: "O personagem Carlisle Cullen é o pai biológico de Edward.",
+    answer: false,
+    feedback: "Falso! Carlisle é o pai adotivo de Edward. Ele o transformou em vampiro em 1918 durante a gripe espanhola."
+  },
+  {
+    text: "Em 'Lua Nova', Bella pula de um penhasco para ter visões de Edward.",
+    answer: true,
+    feedback: "Verdade! Bella começa a praticar esportes radicais para provocar alucinações com a voz de Edward."
+  },
+  {
+    text: "O dom especial de Bella como vampira é criar um escudo mental para proteger a todos ao seu redor.",
+    answer: true,
+    feedback: "Verdade! O escudo de Bella é revelado em 'Amanhecer — Parte 2' e é fundamental para derrotar os Volturi."
+  },
+  {
+    text: "Jacob imprime em Renesmee logo após o seu nascimento em 'Amanhecer'.",
+    answer: true,
+    feedback: "Verdade! A imprinting de Jacob na filha de Bella e Edward é um dos momentos mais marcantes do filme."
+  },
+  {
+    text: "O vilão principal do primeiro filme é o vampiro James, que caça Bella por esporte.",
+    answer: true,
+    feedback: "Verdade! James é um tracker que persegue Bella até Jacksonville e a armadilha num estúdio de dança."
+  },
+  {
+    text: "Em 'Eclipse', Jacob beija Bella contra a vontade dela pela primeira vez.",
+    answer: true,
+    feedback: "Verdade! Jacob força um beijo em Bella, o que irrita profundamente Edward e resulta em Jacob quebrando a mão."
+  },
+  {
+    text: "Os filmes da saga Crepúsculo foram produzidos pela Marvel Studios.",
+    answer: false,
+    feedback: "Falso! Os filmes foram produzidos pela Summit Entertainment, não pela Marvel Studios."
+  }
+];
+
+let answers = new Array(15).fill(null);
+let correctCount = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  answers = new Array(15).fill(null);
+  correctCount = 0;
+  updateScore();
+
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card reveal';
+    card.id = `qcard-${i}`;
+    card.innerHTML = `
+      <div class="q-num">Pergunta ${String(i+1).padStart(2,'0')} de 15</div>
+      <div class="q-text">${q.text}</div>
+      <div class="toggle-group" id="tg-${i}">
+        <div class="slider-pill" id="pill-${i}"></div>
+        <button class="toggle-btn" id="btn-true-${i}" onclick="choose(${i}, true)">✓ Verdadeiro</button>
+        <button class="toggle-btn" id="btn-false-${i}" onclick="choose(${i}, false)">✗ Falso</button>
+      </div>
+      <div class="q-feedback" id="fb-${i}"></div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Reveal on scroll
+  setTimeout(()=>{
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));
+  }, 100);
+}
+
+function choose(idx, chosen) {
+  if (answers[idx] !== null) return; // already answered
+  answers[idx] = chosen;
+
+  const q = questions[idx];
+  const correct = chosen === q.answer;
+  if(correct) correctCount++;
+
+  const pill     = document.getElementById(`pill-${idx}`);
+  const btnTrue  = document.getElementById(`btn-true-${idx}`);
+  const btnFalse = document.getElementById(`btn-false-${idx}`);
+  const fb       = document.getElementById(`fb-${idx}`);
+  const card     = document.getElementById(`qcard-${idx}`);
+
+  // Disable both buttons
+  btnTrue.disabled = true;
+  btnFalse.disabled = true;
+  card.classList.add('answered');
+
+  if (chosen === true) {
+    // Pill slides to true side (left)
+    pill.className = 'slider-pill ' + (correct ? 'pill-true-active' : 'pill-wrong-true');
+    btnTrue.classList.add(correct ? 'correct-glow' : 'wrong-glow');
+    if (!correct) {
+      // Show the correct button in green
+      btnFalse.classList.add('correct-glow');
+    }
+  } else {
+    // Pill slides to false side (right)
+    pill.className = 'slider-pill ' + (correct ? 'pill-false-active' : 'pill-wrong-false');
+    btnFalse.classList.add(correct ? 'correct-glow' : 'wrong-glow');
+    if (!correct) {
+      btnTrue.classList.add('correct-glow');
+    }
+  }
+
+  fb.className = 'q-feedback ' + (correct ? 'correct' : 'wrong') + ' show';
+  fb.innerHTML = (correct ? '✓ Correto! ' : '✗ Incorreto! ') + q.feedback;
+
+  updateScore();
+  checkFinished();
+}
+
+function updateScore() {
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressFill').style.width = (answered/15*100)+'%';
+  document.getElementById('scoreDisplay').textContent = `${correctCount} / ${answered}`;
+}
+
+function checkFinished() {
+  if (answers.every(a => a !== null)) {
+    setTimeout(() => showResult(), 700);
+  }
+}
+
+function showResult() {
+  const panel = document.getElementById('resultPanel');
+  const pct = correctCount / 15;
+  let icon, title, msg;
+
+  if (pct === 1) {
+    icon = '🌟'; title = 'Vampiro Honorário!';
+    msg = 'Perfeito! Você conhece a saga como Edward conhece a mente de Bella. Impressionante demais!';
+  } else if (pct >= 0.8) {
+    icon = '🍎'; title = 'Fã de Verdade!';
+    msg = 'Excelente! Você claramente tem o coração em Forks. Só faltou pouquinho para a perfeição.';
+  } else if (pct >= 0.6) {
+    icon = '🌕'; title = 'Lobisomem Curioso!';
+    msg = 'Bom resultado! Você conhece a saga, mas ainda tem muito para descobrir nas florestas de Forks.';
+  } else if (pct >= 0.4) {
+    icon = '🌲'; title = 'Visitante de Forks';
+    msg = 'Você passou por Forks, mas ainda não mergulhou de cabeça na saga. Assista os filmes novamente!';
+  } else {
+    icon = '🌑'; title = 'Recém-chegado a Forks!';
+    msg = 'Hmm, parece que você ainda não conhece muito a saga. Não se preocupe — há tempo para aprender!';
+  }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultScore').textContent = `${correctCount} de 15`;
+  document.getElementById('resultMsg').textContent = msg;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz() {
+  document.getElementById('resultPanel').classList.remove('show');
+  correctCount = 0;
+  buildQuiz();
+  document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Init
+buildQuiz();
+</script>
+</body>
+</html>
